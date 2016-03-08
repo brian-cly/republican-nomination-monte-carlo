@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func parseResponses(state string, poll Poll, responses []Responses) (trump, cruz int) {
+func parseResponses(state string, poll Poll, responses []Responses) (trump, cruz, rubio, kasich int) {
 	for _, resp := range responses {
 		if resp.Choice == nil {
 			log.Printf("  No Choice for %v state poll by '%v'. Skipping.\n",
@@ -27,11 +27,17 @@ func parseResponses(state string, poll Poll, responses []Responses) (trump, cruz
 		if strings.EqualFold(*resp.Choice, "cruz") {
 			cruz = *resp.Value
 		}
+		if strings.EqualFold(*resp.Choice, "rubio") {
+			rubio = *resp.Value
+		}
+		if strings.EqualFold(*resp.Choice, "kasich") {
+			kasich = *resp.Value
+		}
 	}
 	return
 }
 
-func parseSubpopulation(state string, poll Poll, sub Subpopulations) (trump, cruz, size int) {
+func parseSubpopulation(state string, poll Poll, sub Subpopulations) (trump, cruz, rubio, kasich, size int) {
 	if sub.Observations == nil {
 		log.Printf("  No N for %v state poll by '%v'. Skipping.\n",
 			state, *poll.Pollster)
@@ -39,7 +45,7 @@ func parseSubpopulation(state string, poll Poll, sub Subpopulations) (trump, cru
 	}
 
 	size = *sub.Observations
-	trump, cruz = parseResponses(state, poll, sub.Responses)
+	trump, cruz, rubio, kasich = parseResponses(state, poll, sub.Responses)
 	return
 }
 
@@ -59,18 +65,18 @@ func parseDateAsString(poll Poll) string {
 	return date
 }
 
-func parsePoll(state string, poll Poll) (trump, cruz, size int) {
+func parsePoll(state string, poll Poll) (trump, cruz, rubio, kasich, size int) {
 	for _, question := range poll.Questions {
 		if question.Topic != nil && strings.EqualFold(*question.Topic, "2016-president-gop-primary") {
 			// given multiple subpopulations, prefer likely voters
 			switch len(question.Subpopulations) {
 			case 1:
-				trump, cruz, size = parseSubpopulation(state, poll, question.Subpopulations[0])
+				trump, cruz, rubio, kasich, size = parseSubpopulation(state, poll, question.Subpopulations[0])
 			default:
 				foundLikelyVoters := false
 				for _, sub := range question.Subpopulations {
 					if sub.Name != nil && strings.EqualFold(*sub.Name, "Likely Voters - Republican") {
-						trump, cruz, size = parseSubpopulation(state, poll, sub)
+						trump, cruz, rubio, kasich, size = parseSubpopulation(state, poll, sub)
 						foundLikelyVoters = true
 					}
 				}

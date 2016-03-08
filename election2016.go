@@ -94,17 +94,17 @@ func loadStateData(state string, polls []Poll) (prob StateProbability) {
 			continue
 		}
 
-		var trump, cruz, size int
-		trump, cruz, size = parsePoll(state, poll)
-		if trump == 0 || cruz == 0 {
-			log.Printf("  Missing value (Trump=%v, Cruz=%v) for %v state poll by '%v'. Skipping.\n",
-				trump, cruz, state, *poll.Pollster)
+		var trump, cruz, rubio, kasich, size int
+		trump, cruz, rubio, kasich, size = parsePoll(state, poll)
+		if trump == 0 || cruz == 0 || rubio == 0 || kasich == 0 {
+			log.Printf("  Missing value (Trump=%v, Cruz=%v, Rubio=%v, Kasich=%v) for %v state poll by '%v'. Skipping.\n",
+				trump, cruz, rubio, kasich, state, *poll.Pollster)
 			continue
 		}
 
-		log.Printf("  adding %-30s %10s : T(%v), C(%v), N(%v)\n",
-			truncateString(pollster, 30), date[:10], trump, cruz, size)
-		prob.update(trump, cruz, size)
+		log.Printf("  adding %-30s %10s : T(%v), C(%v), R(%v), K(%v), N(%v)\n",
+			truncateString(pollster, 30), date[:10], trump, cruz, rubio, kasich, size)
+		prob.update(trump, cruz, rubio, kasich, size)
 		if prob.N > float64(acceptableSize) {
 			return
 		}

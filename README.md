@@ -1,6 +1,8 @@
-This is an adapted version of Gary Boone's Presidential Monte Carlo redesigned to fit the 2016 primaries, assuming a two-man race of Trump and Cruz. The original README text can be found below.
+This is an adapted version of Gary Boone's Presidential Monte Carlo redesigned to fit the 2016 primaries, originally assuming a two-man race of Trump and Cruz. After working more with this model, I found that it's probably not the best with anything greater than a one-on-one competition, since it focuses on calculating the probability of gaining greater than 50% for a given state. In fact, the primary and caucus is much more complicated than that, due to states having different rules. Nonetheless, I've since updated it to factor in the remaining candidates, Rubio and Kasich, and set the threshold as Trump's supposed ceiling: 35%.
 
-DISCLAIMER: I will concede that the data for polling this cycle seems to be extremely noisy, in Trump's favor when in actuality he doesn't really have that much dominance (or does he?) in the race. There's also the fact that I don't know what I'm doing. Or maybe we should dispel once and for all the fiction that I don't know what I'm doing. I know exactly what I'm doing.
+The original README text can be found below.
+
+**DISCLAIMER**: I will concede that the data for polling this cycle seems to be extremely noisy, in Trump's favor when in actuality he doesn't really have that much dominance (or does he?) in the race. There's also the fact that I don't know what I'm doing. Or maybe we should dispel once and for all the fiction that I don't know what I'm doing. I know exactly what I'm doing.
 
 ## Original README ##
 
