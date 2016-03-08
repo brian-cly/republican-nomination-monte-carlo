@@ -14,8 +14,8 @@ type StateProbability struct {
 	state            string
 	Trump            float64
 	Cruz             float64
-	Rubio			 float64
-	Kasich			 float64
+	Rubio            float64
+	Kasich           float64
 	N                float64
 	trumpPerc        float64
 	σ                float64
