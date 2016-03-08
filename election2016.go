@@ -7,14 +7,14 @@
 //   $ go run election2016.go state.go api.go cdf.go parse.go college.go
 //
 // Authors:    Brian Ly       briancly@berkeley.edu    
-//			   Gary Boone     gary.boone@gmail.com
+//             Gary Boone     gary.boone@gmail.com
 // History:    2012-09-17     • initial version
 //             2012-09-21     • cleanup, upload to github
 //             2012-09-24     • minimum σ
 //                            • command line parameters
 //                            • days until election countdown
 //             2012-09-25     • simulations in parallel
-//			   2016           • adapted for 2016 republican primary
+//             2016-03-08     • adapt for 2016 republican primary
 // Notes:
 //
 // The state-by-state presidential polling data is provided by the Pollster API:
