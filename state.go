@@ -44,7 +44,7 @@ func (s *StateProbability) update(tPerc, cPerc, rPerc, kPerc, pollSize int) {
 	if min_σ != 0.0 && s.σ < min_σ {
 		s.σ = min_σ
 	}
-	s.TrumpProbability = prOverX(0.33, s.trumpPerc, s.σ)
+	s.TrumpProbability = prOverX(0.35, s.trumpPerc, s.σ)
 }
 
 func (s *StateProbability) simulateElection(r *rand.Rand) int {
