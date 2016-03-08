@@ -13,7 +13,7 @@ import (
 )
 
 // sort polls by most recent first so we use the most recent data
-const apiUrl = "http://elections.huffingtonpost.com/pollster/api/polls.json?sort=updated&topic=2012-president&state="
+const apiUrl = "http://elections.huffingtonpost.com/pollster/api/polls.json?sort=updated&topic=2016-president-gop-primary&state="
 
 type Responses struct {
 	Choice     *string

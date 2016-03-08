@@ -1,25 +1,27 @@
 //
-// election2012.go
+// election2016.go
 //
-// An electoral college Monte Carlo simulation based on 2012 presidential polling.
+// An electoral college Monte Carlo simulation based on 2016 presidential polling.
 //
 // To run:
-//   $ go run election2012.go state.go api.go cdf.go parse.go college.go
+//   $ go run election2016.go state.go api.go cdf.go parse.go college.go
 //
-// Author:     Gary Boone     gary.boone@gmail.com
+// Authors:    Brian Ly       briancly@berkeley.edu    
+//			   Gary Boone     gary.boone@gmail.com
 // History:    2012-09-17     • initial version
 //             2012-09-21     • cleanup, upload to github
 //             2012-09-24     • minimum σ
 //                            • command line parameters
 //                            • days until election countdown
 //             2012-09-25     • simulations in parallel
+//			   2016           • adapted for 2016 republican primary
 // Notes:
 //
 // The state-by-state presidential polling data is provided by the Pollster API:
 //   http://elections.huffingtonpost.com/pollster/api
 // 
 //   Example API call:
-//   wget -O - 'http://elections.huffingtonpost.com/pollster/api/polls.json?topic=2012-president&state=OH'
+//   wget -O - 'http://elections.huffingtonpost.com/pollster/api/polls.json?topic=2016-president-gop-primary&state=OH'
 //
 // Read the logfile for details.
 //
@@ -38,7 +40,7 @@ import (
 	"time"
 )
 
-const swingStates = "FL,OH,NC,VA,WI,CO,IA,NV,NH"
+const states = "AL,AK,AZ,AR,CA,CO,CT,DE,DC,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY"
 
 var (
 	acceptableSize int
@@ -92,17 +94,17 @@ func loadStateData(state string, polls []Poll) (prob StateProbability) {
 			continue
 		}
 
-		var obama, romney, size int
-		obama, romney, size = parsePoll(state, poll)
-		if obama == 0 || romney == 0 {
-			log.Printf("  Missing value (Obama=%v, Romney=%v) for %v state poll by '%v'. Skipping.\n",
-				obama, romney, state, *poll.Pollster)
+		var trump, cruz, size int
+		trump, cruz, size = parsePoll(state, poll)
+		if trump == 0 || cruz == 0 {
+			log.Printf("  Missing value (Trump=%v, Cruz=%v) for %v state poll by '%v'. Skipping.\n",
+				trump, cruz, state, *poll.Pollster)
 			continue
 		}
 
-		log.Printf("  adding %-30s %10s : O(%v), R(%v), N(%v)\n",
-			truncateString(pollster, 30), date[:10], obama, romney, size)
-		prob.update(obama, romney, size)
+		log.Printf("  adding %-30s %10s : T(%v), C(%v), N(%v)\n",
+			truncateString(pollster, 30), date[:10], trump, cruz, size)
+		prob.update(trump, cruz, size)
 		if prob.N > float64(acceptableSize) {
 			return
 		}
@@ -111,7 +113,7 @@ func loadStateData(state string, polls []Poll) (prob StateProbability) {
 }
 
 // for each state, flip a coin
-func simulateObamaVotes(states []StateProbability, r *rand.Rand) int {
+func simulateTrumpVotes(states []StateProbability, r *rand.Rand) int {
 	votes := 0
 	for _, state := range states {
 		votes += state.simulateElection(r)
@@ -159,7 +161,7 @@ func doSome(n int, probs []StateProbability, c chan Result) {
 	var voteSum, winSum int
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < n; i++ {
-		votes := simulateObamaVotes(probs, r)
+		votes := simulateTrumpVotes(probs, r)
 		if votes >= 270 {
 			winSum++
 		}
@@ -186,11 +188,11 @@ func runSimulations(probs []StateProbability) (int, int) {
 	return wins, votes
 }
 
-// Let's say election day begins on midnight Eastern Time on Nov 6, 2012
-func daysUntilElection() int {
+// Let's say convention day begins on midnight Eastern Time on Jul 18, 2016
+func daysUntilConvention() int {
 	now := time.Now()
-	// Midnight Nov 6 is Eastern Standard Time, not DST, so 5 hours behind UTC
-	electionDay := time.Date(2012, time.November, 6, 5, 0, 0, 0, time.UTC)
+	// Midnight Jul 8 is Eastern Standard Time, not DST, so 5 hours behind UTC
+	electionDay := time.Date(2016, time.July, 18, 5, 0, 0, 0, time.UTC)
 	return int(math.Ceil(float64(electionDay.Sub(now)) / (24 * 60 * 60 * 1000000000.0)))
 }
 
@@ -198,23 +200,23 @@ func main() {
 	flag.Parse()
 	initializeLog()
 
-	fmt.Println("Election 2012 Monte Carlo Simulation")
-	fmt.Printf("There are %v days until the election.\n\n", daysUntilElection())
+	fmt.Println("Election 2016 Monte Carlo Simulation")
+	fmt.Printf("There are %v days until the convention.\n\n", daysUntilConvention())
 
 	stateProbalities := initializeSimulations()
 
-	fmt.Println("\nSwing States:")
+	fmt.Println("\nStates:")
 	for _, st := range stateProbalities {
-		if strings.Contains(swingStates, st.state) {
-			fmt.Printf("Probability of Obama winning %v: %4.2f%%\n", st.state, 100.0*st.ObamaProbability)
+		if strings.Contains(states, st.state) {
+			fmt.Printf("Probability of Trump winning %v: %4.2f%%\n", st.state, 100.0*st.TrumpProbability)
 		}
 	}
 
 	wins, totalVotes := runSimulations(stateProbalities)
 
-	fmt.Printf("\nObama re-election probability: %.2f%% \n", 100.0*float64(wins)/float64(numSimulations))
+	fmt.Printf("\nTrump nomination probability: %.2f%% \n", 100.0*float64(wins)/float64(numSimulations))
 	avgVotes := float64(totalVotes) / float64(numSimulations)
 	roundedVotes := int(math.Floor(avgVotes + 0.5))
-	fmt.Printf("Average electoral votes for Obama: %v\n\n", roundedVotes)
+	fmt.Printf("Expected delegate count for Trump: %v\n\n", roundedVotes)
 
 }

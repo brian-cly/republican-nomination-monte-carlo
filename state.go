@@ -12,43 +12,38 @@ import (
 
 type StateProbability struct {
 	state            string
-	Obama            float64
-	Romney           float64
+	Trump            float64
+	Cruz             float64
 	N                float64
-	obamaPerc        float64
+	trumpPerc        float64
 	σ                float64
-	ObamaProbability float64
+	TrumpProbability float64
 }
 
 // Update state data with a new poll. The new N is calculated with the actual 
-// number of votes for Obama and Romney, not the N of the poll. The effect 
+// number of votes for Trump and Cruz, not the N of the poll. The effect 
 // is to not count undecideds and Others. Essentially, the poll is reduced 
 // to a new poll between the two potential winners. In both cases, that's
 // what actually happens. Because the N is reduced, the uncertainty is 
 // increased as it should be.
-func (s *StateProbability) update(oPerc, rPerc, pollSize int) {
-	obamaVotes := float64(oPerc) * float64(pollSize) / 100.0
-	romneyVotes := float64(rPerc) * float64(pollSize) / 100.0
-	s.Obama += obamaVotes
-	s.Romney += romneyVotes
-	s.N += obamaVotes + romneyVotes
+func (s *StateProbability) update(tPerc, cPerc, pollSize int) {
+	trumpVotes := float64(tPerc) * float64(pollSize) / 100.0
+	cruzVotes := float64(cPerc) * float64(pollSize) / 100.0
+	s.Trump += trumpVotes
+	s.Cruz += cruzVotes
+	s.N += trumpVotes + cruzVotes
 
-	s.obamaPerc = s.Obama / s.N
-	s.σ = math.Sqrt((s.obamaPerc - s.obamaPerc*s.obamaPerc) / s.N)
+	s.trumpPerc = s.Trump / s.N
+	s.σ = math.Sqrt((s.trumpPerc - s.trumpPerc*s.trumpPerc) / s.N)
 	if min_σ != 0.0 && s.σ < min_σ {
 		s.σ = min_σ
 	}
-	s.ObamaProbability = prOverX(0.50, s.obamaPerc, s.σ)
+	s.TrumpProbability = prOverX(0.50, s.trumpPerc, s.σ)
 }
 
 func (s *StateProbability) simulateElection(r *rand.Rand) int {
 	if s.N != 0 {
-		if r.Float64() < s.ObamaProbability {
-			return college[s.state].votes
-		}
-	} else {
-		// give state to 2008 winner
-		if college[s.state].dem2008 {
+		if r.Float64() < s.TrumpProbability {
 			return college[s.state].votes
 		}
 	}
@@ -57,8 +52,8 @@ func (s *StateProbability) simulateElection(r *rand.Rand) int {
 
 func (s *StateProbability) logStateProbability() {
 	if s.N != 0 {
-		log.Printf("  %v: Obama polling=%6.4f, N=%d, σ=%6.4f --> Pr(Obama)=%6.4f\n",
-			s.state, s.obamaPerc, int(s.N), s.σ, s.ObamaProbability)
+		log.Printf("  %v: Trump polling=%6.4f, N=%d, σ=%6.4f --> Pr(Trump)=%6.4f\n",
+			s.state, s.trumpPerc, int(s.N), s.σ, s.TrumpProbability)
 	} else {
 		if college[s.state].dem2008 {
 			log.Printf("  %s voted Democratic in 2008.\n", s.state)

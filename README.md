@@ -1,3 +1,9 @@
+This is an adapted version of Gary Boone's Presidential Monte Carlo redesigned to fit the 2016 primaries, assuming a two-man race of Trump and Cruz. The original README text can be found below.
+
+DISCLAIMER: I will concede that the data for polling this cycle seems to be extremely noisy, in Trump's favor when in actuality he doesn't really have that much dominance (or does he?) in the race. There's also the fact that I don't know what I'm doing. Or maybe we should dispel once and for all the fiction that I don't know what I'm doing. I know exactly what I'm doing.
+
+## Original README ##
+
 election2012.go is a Monte Carlo simulator of the 2012 presidential election written in Go. 
 
 * It reads polling data from the Huffington Post API.
