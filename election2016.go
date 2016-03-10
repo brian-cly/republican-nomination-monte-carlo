@@ -191,7 +191,7 @@ func runSimulations(probs []StateProbability) (int, int) {
 // Let's say convention day begins on midnight Eastern Time on Jul 18, 2016
 func daysUntilConvention() int {
 	now := time.Now()
-	// Midnight Jul 8 is Eastern Standard Time, not DST, so 5 hours behind UTC
+	// Midnight Jul 18 is Eastern Standard Time, not DST, so 5 hours behind UTC
 	electionDay := time.Date(2016, time.July, 18, 5, 0, 0, 0, time.UTC)
 	return int(math.Ceil(float64(electionDay.Sub(now)) / (24 * 60 * 60 * 1000000000.0)))
 }
