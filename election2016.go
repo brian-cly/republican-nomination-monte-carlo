@@ -162,7 +162,7 @@ func doSome(n int, probs []StateProbability, c chan Result) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < n; i++ {
 		votes := simulateTrumpVotes(probs, r)
-		if votes >= 270 {
+		if votes >= 1237 {
 			winSum++
 		}
 		voteSum += votes
